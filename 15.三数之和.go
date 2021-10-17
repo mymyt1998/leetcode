@@ -6,54 +6,35 @@
 
 // @lc code=start
 func threeSum(nums []int) [][]int {
-	numsLen := len(nums)
+	n := len(nums)
+	sort.Ints(nums) //用排序来保证不重复计算
 	var result [][]int
-	numMap := map[int][][]int{}
-	countMap := map[int]int{}
-	for _, n := range nums {
-		countMap[n]++
-	}
-	aMap := map[int]bool{}
-	for i, a := range nums {
-		if aMap[a] {
+	for i := 0; i < n; i++ {
+		//不用重复的a
+		if i > 0 && nums[i] == nums[i-1] {
 			continue
 		}
-		aMap[a] = true
-		countMap[a]--
-		bMap := map[int]bool{}
-		for j := i + 1; j < numsLen; j++ {
-			b := nums[j]
-			if !bMap[b] && !aMap[b] && countMap[b] > 0 {
-				numMap[0-a-b] = append(numMap[0-a-b], []int{a, b})
+		a := 0 - nums[i]
+		k := n - 1
+		for j := i + 1; j < n; j++ {
+			//不用重复的b
+			if j > i+1 && nums[j] == nums[j-1] {
+				continue
 			}
-			bMap[b] = true
-		}
-		if countMap[a] > 0 {
-			numMap[0-a-a] = append(numMap[0-a-a], []int{a, a})
-		}
-		countMap[a]++
-	}
-	cMap := map[int]bool{}
-	for _, c := range nums {
-		if cMap[c] {
-			continue
-		}
-		for _, ans := range numMap[c] {
-			a, b := ans[0], ans[1]
-			countMap[c]--
-			countMap[a]--
-			countMap[b]--
-			if countMap[c] >= 0 && countMap[a] >= 0 && countMap[b] >= 0 {
-				if !cMap[a] && !cMap[b] {
-					result = append(result, []int{c, a, b})
-				}
+			//找到等于a-b的c
+			for k > j && nums[k]+nums[j] > a {
+				k--
 			}
-			countMap[c]++
-			countMap[a]++
-			countMap[b]++
+			//没找到合适的c
+			if j == k {
+				break
+			}
+			if nums[k]+nums[j] == a {
+				result = append(result, []int{nums[i], nums[j], nums[k]})
+			}
 		}
-		cMap[c] = true
 	}
+
 	return result
 }
 
